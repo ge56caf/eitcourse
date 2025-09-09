@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-# PART 1: Discrete Choice Design 
+# PART 1: Discrete Choice Design
 
 Load the necessary libraries:
 
@@ -18,22 +18,19 @@ library(AlgDesign)
 library(dplyr)
 ```
 
-**Case**:
-A policy intervention is planned. The city of Munich is considering introducing a city toll of €6 when people enter the city centre by car.We want to investigate how the mode share would change with the introduction of this city toll. We therefore use a SP survey with two scenarios: a status quo scenario without the city toll and one scenario with the city toll. Each scenario should have 6 choice tasks.
+**Case**: A policy intervention is planned. The city of Munich is considering introducing a city toll of €6 when people enter the city centre by car.We want to investigate how the mode share would change with the introduction of this city toll. We therefore use a SP survey with two scenarios: a status quo scenario without the city toll and one scenario with the city toll. Each scenario should have 6 choice tasks.
 
-Basic information about our DCE (without the intervention):   
-**Alternatives**:     PT, car & bike  
-**Attributes**:       Travel time, travel cost, service quality (how comfortable is the journey)  
-**Attribute level**s: Time (10 min, 15 min, 20 min) - Cost (€4, €6, €8) - Service (low, medium, high)  
-**Constraints**:      Alternative Car always has the quality medium or high
-For the second scenario, we add €6 to the price of the car.  
+Basic information about our DCE (without the intervention):\
+**Alternatives**: PT, car & bike\
+**Attributes**: Travel time, travel cost, service quality (how comfortable is the journey)\
+**Attribute level**s: Time (10 min, 15 min, 20 min) - Cost (€4, €6, €8) - Service (low, medium, high)\
+**Constraints**: Alternative Car always has the quality medium or high For the second scenario, we add €6 to the price of the car.
 
 This script is the template to create the design for the 12 final choices.
 
 Important! The general structure of a latent class models looks like this @fig-mindmap
 
 ![Latent Class Model](mindmap.PNG){#fig-mindmap}
-
 
 ## Choice-tasks for Scenario 1 (Status-Quo)
 
@@ -86,13 +83,11 @@ design <- design %>% dplyr::filter(!(if_all(c(Quality_Car, Quality_PT, Quality_B
 design <- design %>% filter(!(Cost_Car == Cost_PT))
 ```
 
-
 Feel free to add more constraints to make your final choice tasks better:
 
 ```{r}
 
 ```
-
 
 Random sampling for choice tasks with different TT for car. Choose the 6 tasks that are most realistic and have the highest trade-off
 
@@ -160,9 +155,10 @@ city_toll <-  choice_set_toll[c(1, 5, 8), ]
 status_quo
 ```
 
-## PART 2: Load Data from Qualtrics and Preprocessing 
+## PART 2: Load Data from Qualtrics and Preprocessing
 
 Load necessary libraries
+
 ```{r}
 #| output: false
 #| code-overflow: wrap
@@ -177,9 +173,7 @@ Load data
 my_data <- read.csv("city_toll_example.csv")
 ```
 
-
 Data preparation
-
 
 ```{r}
 
@@ -264,7 +258,6 @@ Quality_PT = as.numeric(as.factor(Quality_PT))
 
 # Descriptives
 
-
 ```{r}
 # Recode age bands for a readable plot
 combined_data_plot <- combined_data %>%
@@ -289,11 +282,7 @@ theme(axis.text.x = element_text(angle = 45, hjust = 1))
 p_age
 ```
 
-
 # Estimation: Basic MNL with Apollo
-
-
-
 
 ```{r}
 #| eval: false
@@ -389,9 +378,12 @@ apollo_modelOutput(model, modelOutput_settings = list(printClassical = FALSE,
                                                       printPVal = TRUE))
 ```
 
-
 ## Exercises:
 
-- Add demographic interactions to utilities (e.g., time sensitivities by age/income).
-- Produce additional descriptives and sanity checks (shares, missingness, ranges).
-- Consider panel structure and move to mixed logit or LCM if needed.
+-   Add demographic interactions to utilities (e.g., time sensitivities by age/income).
+-   Produce additional descriptives and sanity checks (shares, missingness, ranges).
+-   Consider panel structure and move to mixed logit or LCM if needed.
+
+## Grading:
+
+Get all the point you can!
