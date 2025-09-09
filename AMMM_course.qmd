@@ -1,0 +1,115 @@
+---
+title: "AMMM_course1"
+format: html
+editor: visual
+---
+
+## PART 1: Discrete Choice Design 
+
+Load the necessary libraries:
+
+```{r}
+#| eval: false
+#| 
+library(support.CEs)
+library(idefix)
+library(AlgDesign)
+library(dplyr)
+```
+
+### Case:
+A policy intervention is planned. The city of Munich is considering introducing a city toll of €6 when people enter the city centre by car.We want to investigate how the mode share would change with the introduction of this city toll. We therefore use a SP survey with two scenarios: a status quo scenario without the city toll and one scenario with the city toll. Each scenario should have 6 choice tasks.
+
+Basic information about our DCE (without the intervention):   
+**Alternatives**:     PT, car & bike  
+**Attributes**:       Travel time, travel cost, service quality (how comfortable is the journey)  
+**Attribute level**s: Time (10 min, 15 min, 20 min) - Cost (€4, €6, €8) - Service (low, medium, high)  
+**Constraints**:      Alternative Car always has the quality medium or high
+For the second scenario, we add €6 to the price of the car.  
+
+This script is the template to create the design for the 12 final choices.
+
+## Choice-tasks for Scenario 1 (Status-Quo)
+
+Define attributes for each alternative for our full-factorial design for Scenario Status-Quo
+
+```{r}
+set.seed(999)
+
+attributes <- list(
+  TravelTime_Car = c(10, 15, 20),
+  TravelTime_Bike = c(10, 15, 20),
+  TravelTime_PT = c(10, 15, 20),         # Travel time in minutes
+  Cost_Car = c(4, 6, 8),
+  Cost_PT = c(4, 6, 8),                  # Cost in euros
+  Quality_Car = c("medium", "high"),
+  Quality_Bike = c("low", "medium", "high"),
+  Quality_PT = c("low", "medium", "high")         # Service quality
+)
+
+# Create a full factorial design
+design <- expand.grid(attributes)
+
+```
+
+Now we want to reorder columns for better readability
+
+```{r}
+design <- design[, c("TravelTime_Car", "Cost_Car", "Quality_Car", "TravelTime_PT", "Cost_PT", "Quality_PT", "TravelTime_Bike", "Quality_Bike")]
+#View(design)
+
+# Apply constraints to remove obvious dominant alternatives
+design <- design %>% filter(!((TravelTime_PT == 20 & Cost_PT == 8 & Quality_PT == "low") 
+                              | (TravelTime_Car == 20 & Cost_Car == 8 & Quality_Car == "medium")
+                              | (TravelTime_Bike == 20 & Quality_Bike == "low")))
+
+# Additional constraints to avoid dominant alternatives
+design <- design %>% filter(!(Cost_Car > Cost_PT &
+                                TravelTime_Car > TravelTime_PT &
+                                Quality_PT == "high") 
+                            | (Cost_Car < Cost_PT &
+                                 TravelTime_Car < TravelTime_PT &
+                                 Quality_PT == "low"))
+
+# Ensure non-overlapping attribute levels
+design <- design %>% filter(!(if_all(c(TravelTime_Car, TravelTime_PT, TravelTime_Bike), ~ . == first(.))))
+design <- design %>% filter(!(if_all(c(Quality_Car, Quality_PT, Quality_Bike), ~ . == first(.))))
+design <- design %>% filter(!(Cost_Car == Cost_PT))
+```
+
+
+Feel free to add more constraints to make your final choice tasks better:
+
+```{r}
+
+```
+
+
+Random sampling for choice tasks with different TT for car. Choose the 6 tasks that are most realistic and have the highest trade-off
+
+```{r}
+choice_set_status_quo <- rbind(
+  sample_n(subset(design, TravelTime_Car == 10), 3),
+  sample_n(subset(design, TravelTime_Car == 15), 3),
+  sample_n(subset(design, TravelTime_Car == 20), 3)
+)
+
+View(choice_set_status_quo)
+```
+
+## PART 2: Load Data from Qualtrics and Preprocessing 
+
+Load necessary libraries
+```{r}
+library(apollo)
+library(ggplot2)
+library(dplyr)
+```
+
+Load data
+
+```{r}
+my_data <- read.csv("city_toll_example.csv")
+```
+
+
