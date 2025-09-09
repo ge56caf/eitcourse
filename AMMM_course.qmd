@@ -4,20 +4,18 @@ format: html
 editor: visual
 ---
 
-## PART 1: Discrete Choice Design 
+# PART 1: Discrete Choice Design 
 
 Load the necessary libraries:
 
 ```{r}
-#| eval: false
-#| 
 library(support.CEs)
 library(idefix)
 library(AlgDesign)
 library(dplyr)
 ```
 
-### Case:
+**Case**:
 A policy intervention is planned. The city of Munich is considering introducing a city toll of €6 when people enter the city centre by car.We want to investigate how the mode share would change with the introduction of this city toll. We therefore use a SP survey with two scenarios: a status quo scenario without the city toll and one scenario with the city toll. Each scenario should have 6 choice tasks.
 
 Basic information about our DCE (without the intervention):   
@@ -28,6 +26,11 @@ Basic information about our DCE (without the intervention):
 For the second scenario, we add €6 to the price of the car.  
 
 This script is the template to create the design for the 12 final choices.
+
+Important! The general structure of a latent class models looks like this @fig-mindmap
+
+![Latent Class Model](mindmap.PNG){#fig-mindmap}
+
 
 ## Choice-tasks for Scenario 1 (Status-Quo)
 
@@ -55,16 +58,19 @@ design <- expand.grid(attributes)
 Now we want to reorder columns for better readability
 
 ```{r}
+#| eval: false
+
+library(dplyr)
 design <- design[, c("TravelTime_Car", "Cost_Car", "Quality_Car", "TravelTime_PT", "Cost_PT", "Quality_PT", "TravelTime_Bike", "Quality_Bike")]
 #View(design)
 
 # Apply constraints to remove obvious dominant alternatives
-design <- design %>% filter(!((TravelTime_PT == 20 & Cost_PT == 8 & Quality_PT == "low") 
+design <- design %>% dplyr::filter(!((TravelTime_PT == 20 & Cost_PT == 8 & Quality_PT == "low") 
                               | (TravelTime_Car == 20 & Cost_Car == 8 & Quality_Car == "medium")
                               | (TravelTime_Bike == 20 & Quality_Bike == "low")))
 
 # Additional constraints to avoid dominant alternatives
-design <- design %>% filter(!(Cost_Car > Cost_PT &
+design <- design %>% dplyr::filter(!(Cost_Car > Cost_PT &
                                 TravelTime_Car > TravelTime_PT &
                                 Quality_PT == "high") 
                             | (Cost_Car < Cost_PT &
@@ -72,8 +78,8 @@ design <- design %>% filter(!(Cost_Car > Cost_PT &
                                  Quality_PT == "low"))
 
 # Ensure non-overlapping attribute levels
-design <- design %>% filter(!(if_all(c(TravelTime_Car, TravelTime_PT, TravelTime_Bike), ~ . == first(.))))
-design <- design %>% filter(!(if_all(c(Quality_Car, Quality_PT, Quality_Bike), ~ . == first(.))))
+design <- design %>% dplyr::filter(!(if_all(c(TravelTime_Car, TravelTime_PT, TravelTime_Bike), ~ . == first(.))))
+design <- design %>% dplyr::filter(!(if_all(c(Quality_Car, Quality_PT, Quality_Bike), ~ . == first(.))))
 design <- design %>% filter(!(Cost_Car == Cost_PT))
 ```
 
@@ -97,6 +103,60 @@ choice_set_status_quo <- rbind(
 View(choice_set_status_quo)
 ```
 
+## Choice-tasks for Scenario 2 (City Toll Car)
+
+```{r}
+
+attributes_toll <- list(
+  TravelTime_Car = c(10, 15, 20),    
+  TravelTime_Bike = c(10, 15, 20),
+  TravelTime_PT = c(10, 15, 20),         # Travel time in minutes
+  Cost_Car = c(10, 12, 14),               # More expensive due to the city toll
+  Cost_PT = c(4, 6, 8),                  # Cost in euros
+  Quality_Car = c("medium", "high"),
+  Quality_Bike = c("low", "medium", "high"),
+  Quality_PT = c("low", "medium", "high")         # Service quality
+)
+
+# Create a full factorial design
+design_toll <- expand.grid(attributes_toll)
+
+# Reorder columns for better readability
+design_toll <- design_toll[, c("TravelTime_Car", "Cost_Car", "Quality_Car", "TravelTime_PT", "Cost_PT", "Quality_PT", "TravelTime_Bike", "Quality_Bike")]
+#View(design_toll)
+
+# Apply constraints to remove obvious dominant alternatives
+design_toll <- design_toll %>% filter(!((TravelTime_PT == 20 & Cost_PT == 14 & Quality_PT == "low") 
+                                        | (TravelTime_Car == 20 & Cost_Car == 14 & Quality_Car == "medium")
+                                        | (TravelTime_Bike == 20 & Quality_Bike == "low")))
+
+# Additional constraints to avoid dominant alternatives
+design_toll <- design_toll %>% filter(!(Cost_Car > Cost_PT &
+                                          TravelTime_Car > TravelTime_PT &
+                                          Quality_PT == "high")) 
+
+# Ensure non-overlapping attribute levels
+design_toll <- design_toll %>% filter(!(if_all(c(TravelTime_Car, TravelTime_PT, TravelTime_Bike), ~ . == first(.))))
+design_toll <- design_toll %>% filter(!(if_all(c(Quality_Car, Quality_PT, Quality_Bike), ~ . == first(.))))
+
+# TODO: Feel free to add more constraints to make your final choice tasks better
+
+# Random sampling for choice tasks with different cost for car 
+# Choose the 6 tasks that are most realistic and have the highest trade-off
+choice_set_toll <- rbind(
+  sample_n(subset(design_toll, Cost_Car == 10), 3),
+  sample_n(subset(design_toll, Cost_Car == 12), 3),
+  sample_n(subset(design_toll, Cost_Car == 14), 3)
+)
+#View(choice_set_toll)
+
+# Selected choices
+status_quo <- choice_set_status_quo[c(7, 5, 8), ]
+city_toll <-  choice_set_toll[c(1, 5, 8), ]
+
+status_quo
+```
+
 ## PART 2: Load Data from Qualtrics and Preprocessing 
 
 Load necessary libraries
@@ -113,3 +173,225 @@ my_data <- read.csv("city_toll_example.csv")
 ```
 
 
+Data preparation
+
+
+```{r}
+
+# Select only rows and columns we want
+my_data <- my_data[3:nrow(my_data), 18:38]
+my_data <- my_data %>% mutate(id = dplyr::row_number()) # Keep a user ID, because users answer more questions
+
+
+# Select only the rows where consent was given
+my_data <- my_data[my_data$Consent == 1, ]
+
+
+# Scenario 1
+# Enrich the data for the first question in Scenario 1
+S1_Q1 <- my_data %>% select(-X1_Q_2, -X1_Q_3, -X2_Q_1, -X2_Q_2, -X2_Q_3)
+S1_Q1 <- S1_Q1 %>%
+rename(Choice = X1_Q_1) %>%
+bind_cols(as.data.frame(lapply(status_quo[1, ], rep, nrow(S1_Q1))))
+S1_Q1$Choice_Task <- 1
+S1_Q1$Scenario <- 1
+
+
+# Enrich the data for the second question
+S1_Q2 <- my_data %>% select(-X1_Q_1, -X1_Q_3, -X2_Q_1, -X2_Q_2, -X2_Q_3)
+S1_Q2 <- S1_Q2 %>%
+rename(Choice = X1_Q_2) %>%
+bind_cols(as.data.frame(lapply(status_quo[2, ], rep, nrow(S1_Q2))))
+S1_Q2$Choice_Task <- 2
+S1_Q2$Scenario <- 1
+
+
+# Enrich the data for the third question
+S1_Q3 <- my_data %>% select(-X1_Q_1, -X1_Q_2, -X2_Q_1, -X2_Q_2, -X2_Q_3)
+S1_Q3 <- S1_Q3 %>%
+rename(Choice = X1_Q_3) %>%
+bind_cols(as.data.frame(lapply(status_quo[3, ], rep, nrow(S1_Q3))))
+S1_Q3$Choice_Task <- 3
+S1_Q3$Scenario <- 1
+
+
+# Scenario 2
+# Enrich the data for the first question in Scenario 2
+S2_Q1 <- my_data %>% select(-X1_Q_1, -X1_Q_2, -X1_Q_3, -X2_Q_2, -X2_Q_3)
+S2_Q1 <- S2_Q1 %>%
+rename(Choice = X2_Q_1) %>%
+bind_cols(as.data.frame(lapply(city_toll[1, ], rep, nrow(S2_Q1))))
+S2_Q1$Choice_Task <- 4
+S2_Q1$Scenario <- 2
+
+
+# Enrich the data for the second question
+S2_Q2 <- my_data %>% select(-X1_Q_1, -X1_Q_2, -X1_Q_3, -X2_Q_1, -X2_Q_3)
+S2_Q2 <- S2_Q2 %>%
+rename(Choice = X2_Q_2) %>%
+bind_cols(as.data.frame(lapply(city_toll[2, ], rep, nrow(S2_Q2))))
+S2_Q2$Choice_Task <- 5
+S2_Q2$Scenario <- 2
+
+
+# Enrich the data for the third question
+S2_Q3 <- my_data %>% select(-X1_Q_1, -X1_Q_2, -X1_Q_3, -X2_Q_1, -X2_Q_2)
+S2_Q3 <- S2_Q3 %>%
+rename(Choice = X2_Q_3) %>%
+bind_cols(as.data.frame(lapply(city_toll[3, ], rep, nrow(S2_Q3))))
+S2_Q3$Choice_Task <- 6
+S2_Q3$Scenario <- 2
+
+
+# Combine datasets
+combined_data <- dplyr::bind_rows(S1_Q1, S1_Q2, S1_Q3, S2_Q1, S2_Q2, S2_Q3)
+combined_data <- combined_data %>% dplyr::arrange(id)
+
+
+# Transform categorical variables into factors so apollo can process them
+combined_data <- combined_data %>%
+mutate(
+Quality_Car = as.numeric(as.factor(Quality_Car)),
+Quality_Bike = as.numeric(as.factor(Quality_Bike)),
+Quality_PT = as.numeric(as.factor(Quality_PT))
+)
+```
+
+# Descriptives
+
+
+```{r}
+# Recode age bands for a readable plot
+combined_data_plot <- combined_data %>%
+mutate(Age = dplyr::recode(Age,
+'1' = 'Under 18',
+'2' = '18-24',
+'3' = '25-34',
+'4' = '35-44',
+'5' = '45-54',
+'6' = '55-64',
+'7' = '65 and older'))
+
+
+# Create a bar plot for age distribution
+library(ggplot2)
+
+
+p_age <- ggplot(combined_data_plot, aes(x = Age)) +
+geom_bar(fill = "skyblue") +
+theme_minimal() +
+labs(title = "Age Distribution",
+x = "Age",
+y = "Count") +
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+p_age
+```
+
+
+# Estimation: Basic MNL with Apollo
+
+
+
+
+```{r}
+#| eval: false
+
+### Initialize code
+library(apollo)
+
+apollo_initialise()
+
+database <- combined_data # Save your dataframe as database
+
+### Set core controls
+apollo_control = list(
+  modelName       = "Model_Basic",
+  modelDescr      = "Basic MNL model",
+  indivID         = "id",   # Change this variable to your id
+  nCores          = 1,
+  outputDirectory = "output"
+)
+
+# ################################################################# #
+#### Load data                                                   ####
+# ################################################################# #
+
+# ################################################################# #
+#### Define model parameters                                    ####
+# ################################################################# #
+
+### Vector of parameters, including any that are kept fixed in estimation
+apollo_beta = c(
+  asc_pt   = 0,
+  asc_bike = 0,
+  asc_car_base  = 0,
+  asc_car_toll  = 0,
+  b_tc      = 0,
+  b_tt_car  = 0,
+  b_tt_bike = 0,
+  b_tt_pt   = 0,
+  b_low     = 0,
+  b_medium  = 0,
+  b_high    = 0
+)
+
+### Vector with names (in quotes) of parameters to be kept fixed at their starting value in apollo_beta
+apollo_fixed = c("asc_pt", "b_low")
+
+apollo_inputs = apollo_validateInputs()
+
+# ################################################################# #
+#### Define the model                                            ####
+# ################################################################# #
+
+apollo_probabilities = function(apollo_beta, apollo_inputs, functionality = "estimate"){
+  
+  ### Function initialization: do not change the following three commands
+  ### Attach inputs and detach after function exit
+  apollo_attach(apollo_beta, apollo_inputs)
+  on.exit(apollo_detach(apollo_beta, apollo_inputs))
+  
+  ### Create list of probabilities P
+  P = list()
+  
+  ### Include shifts for city toll in the overall assessment of the modes
+  asc_car = asc_car_base + asc_car_toll * (Scenario == 2)
+  
+  V = list()
+  V[["car"]]  = asc_car + b_tc * Cost_Car + b_tt_car * TravelTime_Car + b_medium * (Quality_Car == 2) + b_high * (Quality_Car == 3)
+  V[["bike"]] = asc_bike + b_tt_bike * TravelTime_Bike + b_medium * (Quality_Bike == 2) + b_high * (Quality_Bike == 3)
+  V[["pt"]]   = asc_pt + b_tc * Cost_PT + b_tt_pt * TravelTime_PT + b_medium * (Quality_PT == 2) + b_high * (Quality_PT == 3)
+  
+  ### Define settings for MNL model component
+  mnl_settings = list(
+    alternatives  = c(car = 1, pt = 2, bike = 5),
+    choiceVar     = Choice,
+    utilities     = V
+  )
+  
+  ### Compute probabilities using MNL model
+  P[["model"]] = apollo_mnl(mnl_settings, functionality)
+  
+  ### Take product across observations for the same individual
+  P = apollo_panelProd(P, apollo_inputs, functionality)
+  
+  ### Prepare and return outputs of the function
+  P = apollo_prepareProb(P, apollo_inputs, functionality)
+  return(P)
+}
+
+model = apollo_estimate(apollo_beta, apollo_fixed, apollo_probabilities, apollo_inputs)
+
+apollo_modelOutput(model, modelOutput_settings = list(printClassical = FALSE,
+                                                      printT1 = TRUE,
+                                                      printPVal = TRUE))
+```
+
+
+## Exercises:
+
+- Add demographic interactions to utilities (e.g., time sensitivities by age/income).
+- Produce additional descriptives and sanity checks (shares, missingness, ranges).
+- Consider panel structure and move to mixed logit or LCM if needed.
