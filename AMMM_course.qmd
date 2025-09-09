@@ -9,6 +9,9 @@ editor: visual
 Load the necessary libraries:
 
 ```{r}
+#| output: false
+#| code-overflow: wrap
+library(ggplot2)
 library(support.CEs)
 library(idefix)
 library(AlgDesign)
@@ -161,6 +164,8 @@ status_quo
 
 Load necessary libraries
 ```{r}
+#| output: false
+#| code-overflow: wrap
 library(apollo)
 library(ggplot2)
 library(dplyr)
@@ -271,11 +276,6 @@ mutate(Age = dplyr::recode(Age,
 '5' = '45-54',
 '6' = '55-64',
 '7' = '65 and older'))
-
-
-# Create a bar plot for age distribution
-library(ggplot2)
-
 
 p_age <- ggplot(combined_data_plot, aes(x = Age)) +
 geom_bar(fill = "skyblue") +

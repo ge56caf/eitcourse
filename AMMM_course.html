@@ -103,32 +103,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>PART 1: Discrete Choice Design</h1>
 <p>Load the necessary libraries:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(support.CEs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Registered S3 method overwritten by 'DoE.base':
-  method           from       
-  factorize.factor conf.design</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(idefix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Lade nötiges Paket: shiny</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AlgDesign)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attache Paket: 'dplyr'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Die folgenden Objekte sind maskiert von 'package:stats':
-
-    filter, lag</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Die folgenden Objekte sind maskiert von 'package:base':
-
-    intersect, setdiff, setequal, union</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-overflow-wrap code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(support.CEs)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(idefix)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AlgDesign)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><strong>Case</strong>: A policy intervention is planned. The city of Munich is considering introducing a city toll of €6 when people enter the city centre by car.We want to investigate how the mode share would change with the introduction of this city toll. We therefore use a SP survey with two scenarios: a status quo scenario without the city toll and one scenario with the city toll. Each scenario should have 6 choice tasks.</p>
 <p>Basic information about our DCE (without the intervention):<br>
@@ -152,109 +131,109 @@ Figure&nbsp;1: Latent Class Model
 <h2 class="anchored" data-anchor-id="choice-tasks-for-scenario-1-status-quo">Choice-tasks for Scenario 1 (Status-Quo)</h2>
 <p>Define attributes for each alternative for our full-factorial design for Scenario Status-Quo</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">999</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>attributes <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_Car =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_Bike =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_PT =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),         <span class="co"># Travel time in minutes</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cost_Car =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>),</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cost_PT =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>),                  <span class="co"># Cost in euros</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_Car =</span> <span class="fu">c</span>(<span class="st">"medium"</span>, <span class="st">"high"</span>),</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_Bike =</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>),</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_PT =</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>)         <span class="co"># Service quality</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a full factorial design</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(attributes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">999</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>attributes <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_Car =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_Bike =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_PT =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),         <span class="co"># Travel time in minutes</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cost_Car =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cost_PT =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>),                  <span class="co"># Cost in euros</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_Car =</span> <span class="fu">c</span>(<span class="st">"medium"</span>, <span class="st">"high"</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_Bike =</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_PT =</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>)         <span class="co"># Service quality</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a full factorial design</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(attributes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now we want to reorder columns for better readability</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design[, <span class="fu">c</span>(<span class="st">"TravelTime_Car"</span>, <span class="st">"Cost_Car"</span>, <span class="st">"Quality_Car"</span>, <span class="st">"TravelTime_PT"</span>, <span class="st">"Cost_PT"</span>, <span class="st">"Quality_PT"</span>, <span class="st">"TravelTime_Bike"</span>, <span class="st">"Quality_Bike"</span>)]</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#View(design)</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply constraints to remove obvious dominant alternatives</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>((TravelTime_PT <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Cost_PT <span class="sc">==</span> <span class="dv">8</span> <span class="sc">&amp;</span> Quality_PT <span class="sc">==</span> <span class="st">"low"</span>) </span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                              <span class="sc">|</span> (TravelTime_Car <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Cost_Car <span class="sc">==</span> <span class="dv">8</span> <span class="sc">&amp;</span> Quality_Car <span class="sc">==</span> <span class="st">"medium"</span>)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                              <span class="sc">|</span> (TravelTime_Bike <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Quality_Bike <span class="sc">==</span> <span class="st">"low"</span>)))</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Additional constraints to avoid dominant alternatives</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(Cost_Car <span class="sc">&gt;</span> Cost_PT <span class="sc">&amp;</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                                TravelTime_Car <span class="sc">&gt;</span> TravelTime_PT <span class="sc">&amp;</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                                Quality_PT <span class="sc">==</span> <span class="st">"high"</span>) </span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>                            <span class="sc">|</span> (Cost_Car <span class="sc">&lt;</span> Cost_PT <span class="sc">&amp;</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>                                 TravelTime_Car <span class="sc">&lt;</span> TravelTime_PT <span class="sc">&amp;</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                                 Quality_PT <span class="sc">==</span> <span class="st">"low"</span>))</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure non-overlapping attribute levels</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">if_all</span>(<span class="fu">c</span>(TravelTime_Car, TravelTime_PT, TravelTime_Bike), <span class="sc">~</span> . <span class="sc">==</span> <span class="fu">first</span>(.))))</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">if_all</span>(<span class="fu">c</span>(Quality_Car, Quality_PT, Quality_Bike), <span class="sc">~</span> . <span class="sc">==</span> <span class="fu">first</span>(.))))</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(Cost_Car <span class="sc">==</span> Cost_PT))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design[, <span class="fu">c</span>(<span class="st">"TravelTime_Car"</span>, <span class="st">"Cost_Car"</span>, <span class="st">"Quality_Car"</span>, <span class="st">"TravelTime_PT"</span>, <span class="st">"Cost_PT"</span>, <span class="st">"Quality_PT"</span>, <span class="st">"TravelTime_Bike"</span>, <span class="st">"Quality_Bike"</span>)]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#View(design)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply constraints to remove obvious dominant alternatives</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>((TravelTime_PT <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Cost_PT <span class="sc">==</span> <span class="dv">8</span> <span class="sc">&amp;</span> Quality_PT <span class="sc">==</span> <span class="st">"low"</span>) </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                              <span class="sc">|</span> (TravelTime_Car <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Cost_Car <span class="sc">==</span> <span class="dv">8</span> <span class="sc">&amp;</span> Quality_Car <span class="sc">==</span> <span class="st">"medium"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                              <span class="sc">|</span> (TravelTime_Bike <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Quality_Bike <span class="sc">==</span> <span class="st">"low"</span>)))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Additional constraints to avoid dominant alternatives</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(Cost_Car <span class="sc">&gt;</span> Cost_PT <span class="sc">&amp;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                                TravelTime_Car <span class="sc">&gt;</span> TravelTime_PT <span class="sc">&amp;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                                Quality_PT <span class="sc">==</span> <span class="st">"high"</span>) </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                            <span class="sc">|</span> (Cost_Car <span class="sc">&lt;</span> Cost_PT <span class="sc">&amp;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                                 TravelTime_Car <span class="sc">&lt;</span> TravelTime_PT <span class="sc">&amp;</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                                 Quality_PT <span class="sc">==</span> <span class="st">"low"</span>))</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure non-overlapping attribute levels</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">if_all</span>(<span class="fu">c</span>(TravelTime_Car, TravelTime_PT, TravelTime_Bike), <span class="sc">~</span> . <span class="sc">==</span> <span class="fu">first</span>(.))))</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">if_all</span>(<span class="fu">c</span>(Quality_Car, Quality_PT, Quality_Bike), <span class="sc">~</span> . <span class="sc">==</span> <span class="fu">first</span>(.))))</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> design <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(Cost_Car <span class="sc">==</span> Cost_PT))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Feel free to add more constraints to make your final choice tasks better:</p>
 <p>Random sampling for choice tasks with different TT for car. Choose the 6 tasks that are most realistic and have the highest trade-off</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>choice_set_status_quo <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design, TravelTime_Car <span class="sc">==</span> <span class="dv">10</span>), <span class="dv">3</span>),</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design, TravelTime_Car <span class="sc">==</span> <span class="dv">15</span>), <span class="dv">3</span>),</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design, TravelTime_Car <span class="sc">==</span> <span class="dv">20</span>), <span class="dv">3</span>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(choice_set_status_quo)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>choice_set_status_quo <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design, TravelTime_Car <span class="sc">==</span> <span class="dv">10</span>), <span class="dv">3</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design, TravelTime_Car <span class="sc">==</span> <span class="dv">15</span>), <span class="dv">3</span>),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design, TravelTime_Car <span class="sc">==</span> <span class="dv">20</span>), <span class="dv">3</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(choice_set_status_quo)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="choice-tasks-for-scenario-2-city-toll-car" class="level2">
 <h2 class="anchored" data-anchor-id="choice-tasks-for-scenario-2-city-toll-car">Choice-tasks for Scenario 2 (City Toll Car)</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>attributes_toll <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_Car =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),    </span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_Bike =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_PT =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),         <span class="co"># Travel time in minutes</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cost_Car =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">12</span>, <span class="dv">14</span>),               <span class="co"># More expensive due to the city toll</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cost_PT =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>),                  <span class="co"># Cost in euros</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_Car =</span> <span class="fu">c</span>(<span class="st">"medium"</span>, <span class="st">"high"</span>),</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_Bike =</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>),</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_PT =</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>)         <span class="co"># Service quality</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a full factorial design</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(attributes_toll)</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder columns for better readability</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll[, <span class="fu">c</span>(<span class="st">"TravelTime_Car"</span>, <span class="st">"Cost_Car"</span>, <span class="st">"Quality_Car"</span>, <span class="st">"TravelTime_PT"</span>, <span class="st">"Cost_PT"</span>, <span class="st">"Quality_PT"</span>, <span class="st">"TravelTime_Bike"</span>, <span class="st">"Quality_Bike"</span>)]</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co">#View(design_toll)</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply constraints to remove obvious dominant alternatives</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>((TravelTime_PT <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Cost_PT <span class="sc">==</span> <span class="dv">14</span> <span class="sc">&amp;</span> Quality_PT <span class="sc">==</span> <span class="st">"low"</span>) </span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>                                        <span class="sc">|</span> (TravelTime_Car <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Cost_Car <span class="sc">==</span> <span class="dv">14</span> <span class="sc">&amp;</span> Quality_Car <span class="sc">==</span> <span class="st">"medium"</span>)</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>                                        <span class="sc">|</span> (TravelTime_Bike <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Quality_Bike <span class="sc">==</span> <span class="st">"low"</span>)))</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Additional constraints to avoid dominant alternatives</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(Cost_Car <span class="sc">&gt;</span> Cost_PT <span class="sc">&amp;</span></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>                                          TravelTime_Car <span class="sc">&gt;</span> TravelTime_PT <span class="sc">&amp;</span></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>                                          Quality_PT <span class="sc">==</span> <span class="st">"high"</span>)) </span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure non-overlapping attribute levels</span></span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">if_all</span>(<span class="fu">c</span>(TravelTime_Car, TravelTime_PT, TravelTime_Bike), <span class="sc">~</span> . <span class="sc">==</span> <span class="fu">first</span>(.))))</span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">if_all</span>(<span class="fu">c</span>(Quality_Car, Quality_PT, Quality_Bike), <span class="sc">~</span> . <span class="sc">==</span> <span class="fu">first</span>(.))))</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: Feel free to add more constraints to make your final choice tasks better</span></span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Random sampling for choice tasks with different cost for car </span></span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Choose the 6 tasks that are most realistic and have the highest trade-off</span></span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>choice_set_toll <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design_toll, Cost_Car <span class="sc">==</span> <span class="dv">10</span>), <span class="dv">3</span>),</span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design_toll, Cost_Car <span class="sc">==</span> <span class="dv">12</span>), <span class="dv">3</span>),</span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design_toll, Cost_Car <span class="sc">==</span> <span class="dv">14</span>), <span class="dv">3</span>)</span>
-<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a><span class="co">#View(choice_set_toll)</span></span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected choices</span></span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>status_quo <span class="ot">&lt;-</span> choice_set_status_quo[<span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">5</span>, <span class="dv">8</span>), ]</span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>city_toll <span class="ot">&lt;-</span>  choice_set_toll[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">8</span>), ]</span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>status_quo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>attributes_toll <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_Car =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),    </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_Bike =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">TravelTime_PT =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>),         <span class="co"># Travel time in minutes</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cost_Car =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">12</span>, <span class="dv">14</span>),               <span class="co"># More expensive due to the city toll</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Cost_PT =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">8</span>),                  <span class="co"># Cost in euros</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_Car =</span> <span class="fu">c</span>(<span class="st">"medium"</span>, <span class="st">"high"</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_Bike =</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quality_PT =</span> <span class="fu">c</span>(<span class="st">"low"</span>, <span class="st">"medium"</span>, <span class="st">"high"</span>)         <span class="co"># Service quality</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a full factorial design</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(attributes_toll)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder columns for better readability</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll[, <span class="fu">c</span>(<span class="st">"TravelTime_Car"</span>, <span class="st">"Cost_Car"</span>, <span class="st">"Quality_Car"</span>, <span class="st">"TravelTime_PT"</span>, <span class="st">"Cost_PT"</span>, <span class="st">"Quality_PT"</span>, <span class="st">"TravelTime_Bike"</span>, <span class="st">"Quality_Bike"</span>)]</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#View(design_toll)</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply constraints to remove obvious dominant alternatives</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>((TravelTime_PT <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Cost_PT <span class="sc">==</span> <span class="dv">14</span> <span class="sc">&amp;</span> Quality_PT <span class="sc">==</span> <span class="st">"low"</span>) </span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>                                        <span class="sc">|</span> (TravelTime_Car <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Cost_Car <span class="sc">==</span> <span class="dv">14</span> <span class="sc">&amp;</span> Quality_Car <span class="sc">==</span> <span class="st">"medium"</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>                                        <span class="sc">|</span> (TravelTime_Bike <span class="sc">==</span> <span class="dv">20</span> <span class="sc">&amp;</span> Quality_Bike <span class="sc">==</span> <span class="st">"low"</span>)))</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Additional constraints to avoid dominant alternatives</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(Cost_Car <span class="sc">&gt;</span> Cost_PT <span class="sc">&amp;</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>                                          TravelTime_Car <span class="sc">&gt;</span> TravelTime_PT <span class="sc">&amp;</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>                                          Quality_PT <span class="sc">==</span> <span class="st">"high"</span>)) </span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure non-overlapping attribute levels</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">if_all</span>(<span class="fu">c</span>(TravelTime_Car, TravelTime_PT, TravelTime_Bike), <span class="sc">~</span> . <span class="sc">==</span> <span class="fu">first</span>(.))))</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>design_toll <span class="ot">&lt;-</span> design_toll <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">if_all</span>(<span class="fu">c</span>(Quality_Car, Quality_PT, Quality_Bike), <span class="sc">~</span> . <span class="sc">==</span> <span class="fu">first</span>(.))))</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: Feel free to add more constraints to make your final choice tasks better</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Random sampling for choice tasks with different cost for car </span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Choose the 6 tasks that are most realistic and have the highest trade-off</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>choice_set_toll <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design_toll, Cost_Car <span class="sc">==</span> <span class="dv">10</span>), <span class="dv">3</span>),</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design_toll, Cost_Car <span class="sc">==</span> <span class="dv">12</span>), <span class="dv">3</span>),</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="fu">subset</span>(design_toll, Cost_Car <span class="sc">==</span> <span class="dv">14</span>), <span class="dv">3</span>)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="co">#View(choice_set_toll)</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Selected choices</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>status_quo <span class="ot">&lt;-</span> choice_set_status_quo[<span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">5</span>, <span class="dv">8</span>), ]</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>city_toll <span class="ot">&lt;-</span>  choice_set_toll[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">8</span>), ]</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>status_quo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  TravelTime_Car TravelTime_Bike TravelTime_PT Cost_Car Cost_PT Quality_Car
 7             20              10            15        8       8      medium
@@ -271,151 +250,120 @@ Figure&nbsp;1: Latent Class Model
 <h2 class="anchored" data-anchor-id="part-2-load-data-from-qualtrics-and-preprocessing">PART 2: Load Data from Qualtrics and Preprocessing</h2>
 <p>Load necessary libraries</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(apollo)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-             . ,,                                                            
-            ,      ,,                                                        
- ,,,,,,    ,         ,,                                                      
-,     ,,  ,            ,,,,.                                                 
-,,     , ,,   ,,,,,,    ,,,                                 //  //           
-  ,     ,,,.   ,,,,,.   ,,      ////                        //  //           
-,,     ,,,,,.           ,,     // //     //////    /////    //  //    /////  
-,,,        ,,           ,      //  //    /    //  //   //   //  //   //   // 
-              ,,       ,      ////////   /    //  //   //   //  //   //   // 
-                ,,   ,,      //     //   /   ///  //   //   //  //   //   // 
-                   ,         //      //  /////      ///      //  //    ///   
-                                         //                                  
-                                         //                                  
-
-Apollo 0.3.1
-http://www.ApolloChoiceModelling.com
-See url for a detailed manual, examples and a user forum.
-Sign up to the user forum to receive updates on new releases.
-
-Please cite Apollo in all written material you produce:
-Hess S, Palma D (2019). "Apollo: a flexible, powerful and customisable
-freeware package for choice model estimation and application." Journal
-of Choice Modelling, 32. doi:10.1016/j.jocm.2019.100170</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-overflow-wrap code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(apollo)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Load data</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"city_toll_example.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"city_toll_example.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Data preparation</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select only rows and columns we want</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> my_data[<span class="dv">3</span><span class="sc">:</span><span class="fu">nrow</span>(my_data), <span class="dv">18</span><span class="sc">:</span><span class="dv">38</span>]</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">id =</span> dplyr<span class="sc">::</span><span class="fu">row_number</span>()) <span class="co"># Keep a user ID, because users answer more questions</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Select only the rows where consent was given</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> my_data[my_data<span class="sc">$</span>Consent <span class="sc">==</span> <span class="dv">1</span>, ]</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Scenario 1</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the first question in Scenario 1</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>S1_Q1 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_2, <span class="sc">-</span>X2_Q_3)</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>S1_Q1 <span class="ot">&lt;-</span> S1_Q1 <span class="sc">%&gt;%</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X1_Q_1) <span class="sc">%&gt;%</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(status_quo[<span class="dv">1</span>, ], rep, <span class="fu">nrow</span>(S1_Q1))))</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>S1_Q1<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>S1_Q1<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the second question</span></span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>S1_Q2 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_2, <span class="sc">-</span>X2_Q_3)</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>S1_Q2 <span class="ot">&lt;-</span> S1_Q2 <span class="sc">%&gt;%</span></span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X1_Q_2) <span class="sc">%&gt;%</span></span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(status_quo[<span class="dv">2</span>, ], rep, <span class="fu">nrow</span>(S1_Q2))))</span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>S1_Q2<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>S1_Q2<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the third question</span></span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>S1_Q3 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_2, <span class="sc">-</span>X2_Q_3)</span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>S1_Q3 <span class="ot">&lt;-</span> S1_Q3 <span class="sc">%&gt;%</span></span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X1_Q_3) <span class="sc">%&gt;%</span></span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(status_quo[<span class="dv">3</span>, ], rep, <span class="fu">nrow</span>(S1_Q3))))</span>
-<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>S1_Q3<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>S1_Q3<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Scenario 2</span></span>
-<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the first question in Scenario 2</span></span>
-<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>S2_Q1 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_2, <span class="sc">-</span>X2_Q_3)</span>
-<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>S2_Q1 <span class="ot">&lt;-</span> S2_Q1 <span class="sc">%&gt;%</span></span>
-<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X2_Q_1) <span class="sc">%&gt;%</span></span>
-<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(city_toll[<span class="dv">1</span>, ], rep, <span class="fu">nrow</span>(S2_Q1))))</span>
-<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>S2_Q1<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>S2_Q1<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the second question</span></span>
-<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>S2_Q2 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_3)</span>
-<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>S2_Q2 <span class="ot">&lt;-</span> S2_Q2 <span class="sc">%&gt;%</span></span>
-<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X2_Q_2) <span class="sc">%&gt;%</span></span>
-<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(city_toll[<span class="dv">2</span>, ], rep, <span class="fu">nrow</span>(S2_Q2))))</span>
-<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a>S2_Q2<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>S2_Q2<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the third question</span></span>
-<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a>S2_Q3 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_2)</span>
-<span id="cb18-59"><a href="#cb18-59" aria-hidden="true" tabindex="-1"></a>S2_Q3 <span class="ot">&lt;-</span> S2_Q3 <span class="sc">%&gt;%</span></span>
-<span id="cb18-60"><a href="#cb18-60" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X2_Q_3) <span class="sc">%&gt;%</span></span>
-<span id="cb18-61"><a href="#cb18-61" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(city_toll[<span class="dv">3</span>, ], rep, <span class="fu">nrow</span>(S2_Q3))))</span>
-<span id="cb18-62"><a href="#cb18-62" aria-hidden="true" tabindex="-1"></a>S2_Q3<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">6</span></span>
-<span id="cb18-63"><a href="#cb18-63" aria-hidden="true" tabindex="-1"></a>S2_Q3<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb18-64"><a href="#cb18-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-65"><a href="#cb18-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-66"><a href="#cb18-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine datasets</span></span>
-<span id="cb18-67"><a href="#cb18-67" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(S1_Q1, S1_Q2, S1_Q3, S2_Q1, S2_Q2, S2_Q3)</span>
-<span id="cb18-68"><a href="#cb18-68" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(id)</span>
-<span id="cb18-69"><a href="#cb18-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-70"><a href="#cb18-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-71"><a href="#cb18-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform categorical variables into factors so apollo can process them</span></span>
-<span id="cb18-72"><a href="#cb18-72" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
-<span id="cb18-73"><a href="#cb18-73" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
-<span id="cb18-74"><a href="#cb18-74" aria-hidden="true" tabindex="-1"></a><span class="at">Quality_Car =</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(Quality_Car)),</span>
-<span id="cb18-75"><a href="#cb18-75" aria-hidden="true" tabindex="-1"></a><span class="at">Quality_Bike =</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(Quality_Bike)),</span>
-<span id="cb18-76"><a href="#cb18-76" aria-hidden="true" tabindex="-1"></a><span class="at">Quality_PT =</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(Quality_PT))</span>
-<span id="cb18-77"><a href="#cb18-77" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select only rows and columns we want</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> my_data[<span class="dv">3</span><span class="sc">:</span><span class="fu">nrow</span>(my_data), <span class="dv">18</span><span class="sc">:</span><span class="dv">38</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">id =</span> dplyr<span class="sc">::</span><span class="fu">row_number</span>()) <span class="co"># Keep a user ID, because users answer more questions</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Select only the rows where consent was given</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>my_data <span class="ot">&lt;-</span> my_data[my_data<span class="sc">$</span>Consent <span class="sc">==</span> <span class="dv">1</span>, ]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Scenario 1</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the first question in Scenario 1</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>S1_Q1 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_2, <span class="sc">-</span>X2_Q_3)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>S1_Q1 <span class="ot">&lt;-</span> S1_Q1 <span class="sc">%&gt;%</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X1_Q_1) <span class="sc">%&gt;%</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(status_quo[<span class="dv">1</span>, ], rep, <span class="fu">nrow</span>(S1_Q1))))</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>S1_Q1<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>S1_Q1<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the second question</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>S1_Q2 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_2, <span class="sc">-</span>X2_Q_3)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>S1_Q2 <span class="ot">&lt;-</span> S1_Q2 <span class="sc">%&gt;%</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X1_Q_2) <span class="sc">%&gt;%</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(status_quo[<span class="dv">2</span>, ], rep, <span class="fu">nrow</span>(S1_Q2))))</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>S1_Q2<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>S1_Q2<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the third question</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>S1_Q3 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_2, <span class="sc">-</span>X2_Q_3)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>S1_Q3 <span class="ot">&lt;-</span> S1_Q3 <span class="sc">%&gt;%</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X1_Q_3) <span class="sc">%&gt;%</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(status_quo[<span class="dv">3</span>, ], rep, <span class="fu">nrow</span>(S1_Q3))))</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>S1_Q3<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>S1_Q3<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Scenario 2</span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the first question in Scenario 2</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>S2_Q1 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_2, <span class="sc">-</span>X2_Q_3)</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>S2_Q1 <span class="ot">&lt;-</span> S2_Q1 <span class="sc">%&gt;%</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X2_Q_1) <span class="sc">%&gt;%</span></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(city_toll[<span class="dv">1</span>, ], rep, <span class="fu">nrow</span>(S2_Q1))))</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>S2_Q1<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>S2_Q1<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the second question</span></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>S2_Q2 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_3)</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>S2_Q2 <span class="ot">&lt;-</span> S2_Q2 <span class="sc">%&gt;%</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X2_Q_2) <span class="sc">%&gt;%</span></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(city_toll[<span class="dv">2</span>, ], rep, <span class="fu">nrow</span>(S2_Q2))))</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>S2_Q2<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>S2_Q2<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Enrich the data for the third question</span></span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>S2_Q3 <span class="ot">&lt;-</span> my_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>X1_Q_1, <span class="sc">-</span>X1_Q_2, <span class="sc">-</span>X1_Q_3, <span class="sc">-</span>X2_Q_1, <span class="sc">-</span>X2_Q_2)</span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>S2_Q3 <span class="ot">&lt;-</span> S2_Q3 <span class="sc">%&gt;%</span></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(<span class="at">Choice =</span> X2_Q_3) <span class="sc">%&gt;%</span></span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(<span class="fu">as.data.frame</span>(<span class="fu">lapply</span>(city_toll[<span class="dv">3</span>, ], rep, <span class="fu">nrow</span>(S2_Q3))))</span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>S2_Q3<span class="sc">$</span>Choice_Task <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>S2_Q3<span class="sc">$</span>Scenario <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine datasets</span></span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(S1_Q1, S1_Q2, S1_Q3, S2_Q1, S2_Q2, S2_Q3)</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(id)</span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform categorical variables into factors so apollo can process them</span></span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a><span class="at">Quality_Car =</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(Quality_Car)),</span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a><span class="at">Quality_Bike =</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(Quality_Bike)),</span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a><span class="at">Quality_PT =</span> <span class="fu">as.numeric</span>(<span class="fu">as.factor</span>(Quality_PT))</span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>
 <section id="descriptives" class="level1">
 <h1>Descriptives</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Recode age bands for a readable plot</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>combined_data_plot <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">Age =</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(Age,</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="st">'1'</span> <span class="ot">=</span> <span class="st">'Under 18'</span>,</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="st">'2'</span> <span class="ot">=</span> <span class="st">'18-24'</span>,</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="st">'3'</span> <span class="ot">=</span> <span class="st">'25-34'</span>,</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="st">'4'</span> <span class="ot">=</span> <span class="st">'35-44'</span>,</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="st">'5'</span> <span class="ot">=</span> <span class="st">'45-54'</span>,</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="st">'6'</span> <span class="ot">=</span> <span class="st">'55-64'</span>,</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="st">'7'</span> <span class="ot">=</span> <span class="st">'65 and older'</span>))</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a bar plot for age distribution</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>p_age <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(combined_data_plot, <span class="fu">aes</span>(<span class="at">x =</span> Age)) <span class="sc">+</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_bar</span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>) <span class="sc">+</span></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Age Distribution"</span>,</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Age"</span>,</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>p_age</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Recode age bands for a readable plot</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>combined_data_plot <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">Age =</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(Age,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="st">'1'</span> <span class="ot">=</span> <span class="st">'Under 18'</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="st">'2'</span> <span class="ot">=</span> <span class="st">'18-24'</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="st">'3'</span> <span class="ot">=</span> <span class="st">'25-34'</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="st">'4'</span> <span class="ot">=</span> <span class="st">'35-44'</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="st">'5'</span> <span class="ot">=</span> <span class="st">'45-54'</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="st">'6'</span> <span class="ot">=</span> <span class="st">'55-64'</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="st">'7'</span> <span class="ot">=</span> <span class="st">'65 and older'</span>))</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>p_age <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(combined_data_plot, <span class="fu">aes</span>(<span class="at">x =</span> Age)) <span class="sc">+</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_bar</span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>) <span class="sc">+</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Age Distribution"</span>,</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Age"</span>,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>p_age</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -428,95 +376,95 @@ of Choice Modelling, 32. doi:10.1016/j.jocm.2019.100170</code></pre>
 <section id="estimation-basic-mnl-with-apollo" class="level1">
 <h1>Estimation: Basic MNL with Apollo</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Initialize code</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(apollo)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">apollo_initialise</span>()</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>database <span class="ot">&lt;-</span> combined_data <span class="co"># Save your dataframe as database</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="do">### Set core controls</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>apollo_control <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">modelName       =</span> <span class="st">"Model_Basic"</span>,</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">modelDescr      =</span> <span class="st">"Basic MNL model"</span>,</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">indivID         =</span> <span class="st">"id"</span>,   <span class="co"># Change this variable to your id</span></span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">nCores          =</span> <span class="dv">1</span>,</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputDirectory =</span> <span class="st">"output"</span></span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="do">#### Load data                                                   ####</span></span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="do">#### Define model parameters                                    ####</span></span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="do">### Vector of parameters, including any that are kept fixed in estimation</span></span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>apollo_beta <span class="ot">=</span> <span class="fu">c</span>(</span>
-<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">asc_pt   =</span> <span class="dv">0</span>,</span>
-<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">asc_bike =</span> <span class="dv">0</span>,</span>
-<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">asc_car_base  =</span> <span class="dv">0</span>,</span>
-<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">asc_car_toll  =</span> <span class="dv">0</span>,</span>
-<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_tc      =</span> <span class="dv">0</span>,</span>
-<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_tt_car  =</span> <span class="dv">0</span>,</span>
-<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_tt_bike =</span> <span class="dv">0</span>,</span>
-<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_tt_pt   =</span> <span class="dv">0</span>,</span>
-<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_low     =</span> <span class="dv">0</span>,</span>
-<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_medium  =</span> <span class="dv">0</span>,</span>
-<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_high    =</span> <span class="dv">0</span></span>
-<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a><span class="do">### Vector with names (in quotes) of parameters to be kept fixed at their starting value in apollo_beta</span></span>
-<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>apollo_fixed <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"asc_pt"</span>, <span class="st">"b_low"</span>)</span>
-<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>apollo_inputs <span class="ot">=</span> <span class="fu">apollo_validateInputs</span>()</span>
-<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
-<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a><span class="do">#### Define the model                                            ####</span></span>
-<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
-<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>apollo_probabilities <span class="ot">=</span> <span class="cf">function</span>(apollo_beta, apollo_inputs, <span class="at">functionality =</span> <span class="st">"estimate"</span>){</span>
-<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Function initialization: do not change the following three commands</span></span>
-<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Attach inputs and detach after function exit</span></span>
-<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">apollo_attach</span>(apollo_beta, apollo_inputs)</span>
-<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">on.exit</span>(<span class="fu">apollo_detach</span>(apollo_beta, apollo_inputs))</span>
-<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Create list of probabilities P</span></span>
-<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">=</span> <span class="fu">list</span>()</span>
-<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Include shifts for city toll in the overall assessment of the modes</span></span>
-<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a>  asc_car <span class="ot">=</span> asc_car_base <span class="sc">+</span> asc_car_toll <span class="sc">*</span> (Scenario <span class="sc">==</span> <span class="dv">2</span>)</span>
-<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a>  V <span class="ot">=</span> <span class="fu">list</span>()</span>
-<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a>  V[[<span class="st">"car"</span>]]  <span class="ot">=</span> asc_car <span class="sc">+</span> b_tc <span class="sc">*</span> Cost_Car <span class="sc">+</span> b_tt_car <span class="sc">*</span> TravelTime_Car <span class="sc">+</span> b_medium <span class="sc">*</span> (Quality_Car <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">+</span> b_high <span class="sc">*</span> (Quality_Car <span class="sc">==</span> <span class="dv">3</span>)</span>
-<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a>  V[[<span class="st">"bike"</span>]] <span class="ot">=</span> asc_bike <span class="sc">+</span> b_tt_bike <span class="sc">*</span> TravelTime_Bike <span class="sc">+</span> b_medium <span class="sc">*</span> (Quality_Bike <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">+</span> b_high <span class="sc">*</span> (Quality_Bike <span class="sc">==</span> <span class="dv">3</span>)</span>
-<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a>  V[[<span class="st">"pt"</span>]]   <span class="ot">=</span> asc_pt <span class="sc">+</span> b_tc <span class="sc">*</span> Cost_PT <span class="sc">+</span> b_tt_pt <span class="sc">*</span> TravelTime_PT <span class="sc">+</span> b_medium <span class="sc">*</span> (Quality_PT <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">+</span> b_high <span class="sc">*</span> (Quality_PT <span class="sc">==</span> <span class="dv">3</span>)</span>
-<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Define settings for MNL model component</span></span>
-<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>  mnl_settings <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">alternatives  =</span> <span class="fu">c</span>(<span class="at">car =</span> <span class="dv">1</span>, <span class="at">pt =</span> <span class="dv">2</span>, <span class="at">bike =</span> <span class="dv">5</span>),</span>
-<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">choiceVar     =</span> Choice,</span>
-<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">utilities     =</span> V</span>
-<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Compute probabilities using MNL model</span></span>
-<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>  P[[<span class="st">"model"</span>]] <span class="ot">=</span> <span class="fu">apollo_mnl</span>(mnl_settings, functionality)</span>
-<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Take product across observations for the same individual</span></span>
-<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">=</span> <span class="fu">apollo_panelProd</span>(P, apollo_inputs, functionality)</span>
-<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Prepare and return outputs of the function</span></span>
-<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">=</span> <span class="fu">apollo_prepareProb</span>(P, apollo_inputs, functionality)</span>
-<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(P)</span>
-<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">apollo_estimate</span>(apollo_beta, apollo_fixed, apollo_probabilities, apollo_inputs)</span>
-<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a><span class="fu">apollo_modelOutput</span>(model, <span class="at">modelOutput_settings =</span> <span class="fu">list</span>(<span class="at">printClassical =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a>                                                      <span class="at">printT1 =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb20-89"><a href="#cb20-89" aria-hidden="true" tabindex="-1"></a>                                                      <span class="at">printPVal =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Initialize code</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(apollo)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">apollo_initialise</span>()</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>database <span class="ot">&lt;-</span> combined_data <span class="co"># Save your dataframe as database</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="do">### Set core controls</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>apollo_control <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">modelName       =</span> <span class="st">"Model_Basic"</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">modelDescr      =</span> <span class="st">"Basic MNL model"</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">indivID         =</span> <span class="st">"id"</span>,   <span class="co"># Change this variable to your id</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">nCores          =</span> <span class="dv">1</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">outputDirectory =</span> <span class="st">"output"</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="do">#### Load data                                                   ####</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="do">#### Define model parameters                                    ####</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="do">### Vector of parameters, including any that are kept fixed in estimation</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>apollo_beta <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">asc_pt   =</span> <span class="dv">0</span>,</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">asc_bike =</span> <span class="dv">0</span>,</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">asc_car_base  =</span> <span class="dv">0</span>,</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">asc_car_toll  =</span> <span class="dv">0</span>,</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_tc      =</span> <span class="dv">0</span>,</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_tt_car  =</span> <span class="dv">0</span>,</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_tt_bike =</span> <span class="dv">0</span>,</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_tt_pt   =</span> <span class="dv">0</span>,</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_low     =</span> <span class="dv">0</span>,</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_medium  =</span> <span class="dv">0</span>,</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_high    =</span> <span class="dv">0</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a><span class="do">### Vector with names (in quotes) of parameters to be kept fixed at their starting value in apollo_beta</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>apollo_fixed <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"asc_pt"</span>, <span class="st">"b_low"</span>)</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>apollo_inputs <span class="ot">=</span> <span class="fu">apollo_validateInputs</span>()</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a><span class="do">#### Define the model                                            ####</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a><span class="co"># ################################################################# #</span></span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>apollo_probabilities <span class="ot">=</span> <span class="cf">function</span>(apollo_beta, apollo_inputs, <span class="at">functionality =</span> <span class="st">"estimate"</span>){</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Function initialization: do not change the following three commands</span></span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Attach inputs and detach after function exit</span></span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">apollo_attach</span>(apollo_beta, apollo_inputs)</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">on.exit</span>(<span class="fu">apollo_detach</span>(apollo_beta, apollo_inputs))</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Create list of probabilities P</span></span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Include shifts for city toll in the overall assessment of the modes</span></span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>  asc_car <span class="ot">=</span> asc_car_base <span class="sc">+</span> asc_car_toll <span class="sc">*</span> (Scenario <span class="sc">==</span> <span class="dv">2</span>)</span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>  V <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>  V[[<span class="st">"car"</span>]]  <span class="ot">=</span> asc_car <span class="sc">+</span> b_tc <span class="sc">*</span> Cost_Car <span class="sc">+</span> b_tt_car <span class="sc">*</span> TravelTime_Car <span class="sc">+</span> b_medium <span class="sc">*</span> (Quality_Car <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">+</span> b_high <span class="sc">*</span> (Quality_Car <span class="sc">==</span> <span class="dv">3</span>)</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>  V[[<span class="st">"bike"</span>]] <span class="ot">=</span> asc_bike <span class="sc">+</span> b_tt_bike <span class="sc">*</span> TravelTime_Bike <span class="sc">+</span> b_medium <span class="sc">*</span> (Quality_Bike <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">+</span> b_high <span class="sc">*</span> (Quality_Bike <span class="sc">==</span> <span class="dv">3</span>)</span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>  V[[<span class="st">"pt"</span>]]   <span class="ot">=</span> asc_pt <span class="sc">+</span> b_tc <span class="sc">*</span> Cost_PT <span class="sc">+</span> b_tt_pt <span class="sc">*</span> TravelTime_PT <span class="sc">+</span> b_medium <span class="sc">*</span> (Quality_PT <span class="sc">==</span> <span class="dv">2</span>) <span class="sc">+</span> b_high <span class="sc">*</span> (Quality_PT <span class="sc">==</span> <span class="dv">3</span>)</span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Define settings for MNL model component</span></span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>  mnl_settings <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">alternatives  =</span> <span class="fu">c</span>(<span class="at">car =</span> <span class="dv">1</span>, <span class="at">pt =</span> <span class="dv">2</span>, <span class="at">bike =</span> <span class="dv">5</span>),</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">choiceVar     =</span> Choice,</span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">utilities     =</span> V</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Compute probabilities using MNL model</span></span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>  P[[<span class="st">"model"</span>]] <span class="ot">=</span> <span class="fu">apollo_mnl</span>(mnl_settings, functionality)</span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Take product across observations for the same individual</span></span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">=</span> <span class="fu">apollo_panelProd</span>(P, apollo_inputs, functionality)</span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>  <span class="do">### Prepare and return outputs of the function</span></span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">=</span> <span class="fu">apollo_prepareProb</span>(P, apollo_inputs, functionality)</span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(P)</span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">apollo_estimate</span>(apollo_beta, apollo_fixed, apollo_probabilities, apollo_inputs)</span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a><span class="fu">apollo_modelOutput</span>(model, <span class="at">modelOutput_settings =</span> <span class="fu">list</span>(<span class="at">printClassical =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>                                                      <span class="at">printT1 =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>                                                      <span class="at">printPVal =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="exercises" class="level2">
 <h2 class="anchored" data-anchor-id="exercises">Exercises:</h2>
